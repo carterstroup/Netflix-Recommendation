@@ -1,6 +1,6 @@
 #Imports
 import time
-from data_import import get_search_data, get_authors, get_show_by_actor
+from data_import import get_search_data, get_actors, get_show_by_actor
 
 #Initialization
 #Asks the user if they wish to use the search or recommendation function and calls the appropriate function
@@ -33,14 +33,14 @@ def lookup_init():
 
 #Searches the Netflix shows based on a full or partial actor name.
 def lookup_actor():
-    list_of_authors = get_authors()
+    list_of_actors = get_actors()
     final_actor_list = []
     #requests an input until the resulting actor list is 9 or fewer
     while True:
         print("Please enter part or all of an actors name.")
         user_input = input().strip()
         list_of_matches = []
-        for actor in list_of_authors:
+        for actor in list_of_actors:
             if user_input in actor:
                 list_of_matches.append(actor)
         if len(list_of_matches) > 10:
@@ -49,23 +49,24 @@ def lookup_actor():
         else:
             final_actor_list += list_of_matches
             break
+    #display the actors that were found in the search
     print("Our records have found these actors.")
     print("Please enter the number that correlates to the name of your intended actor for a list of Netflix shows and movies")
-    author_and_number_dict = {}
+    actor_and_number_dict = {} #assigns a number to the actor for easy input selection
     idx_track = 0
     for actor in final_actor_list:
-        author_and_number_dict[str(idx_track)] = actor
+        actor_and_number_dict[str(idx_track)] = actor
         idx_track += 1
         
-    print(author_and_number_dict)
+    print(actor_and_number_dict)
     
     actor_selection = input()
     
-    print("You have selected " + author_and_number_dict[actor_selection])
+    print("You have selected " + actor_and_number_dict[actor_selection])
     
-    print("This actor has appeard in the following moviews and TV Shows")
+    print("This actor has appear in the following moviews and TV Shows")
     
-    list_shows_and_info(get_show_by_actor(author_and_number_dict[actor_selection]))
+    list_shows_and_info(get_show_by_actor(actor_and_number_dict[actor_selection]))
 
 def lookup_name():
     pass

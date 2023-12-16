@@ -1,35 +1,37 @@
 import csv
 import pandas as pd
 
-def flatten(x):
+#Takes a nested array and turns it into a one-dimensional array
+def flatten(list):
     result = []
-    for el in x:
-        if hasattr(el, "__iter__") and not isinstance(el, str):
-            result.extend(flatten(el))
+    for item in list:
+        if hasattr(item, "__iter__") and not isinstance(item, str):
+            result.extend(flatten(item))
         else:
-            result.append(el)
+            result.append(item)
     return result
 
+#Not currently used, should be considered for deletion
 def get_search_data():
-    shows_and_authors = {}
+    shows_and_actors = {}
     with open("netflix_titles.csv") as imported_data:
         csv_reader = csv.DictReader(imported_data)
         for title in csv_reader:
-            shows_and_authors[title["title"]] = title["cast"]
-        return shows_and_authors#
+            shows_and_actors[title["title"]] = title["cast"]
+        return shows_and_actors
     
-def get_authors():
+def get_actors():
     df = pd.read_csv("netflix_titles.csv", usecols=['cast'], skip_blank_lines=True)
     df_modified = df.dropna()
     df_modified2 = df_modified.drop_duplicates()
-    author_pre_list = df_modified2.values.tolist()
-    author_list = flatten(author_pre_list)
-    actor_list = []
-    for actor in author_list:
+    actor_pre_list = df_modified2.values.tolist()
+    actor_list = flatten(actor_pre_list)
+    actor_list_2 = []
+    for actor in actor_list:
         split_actors = actor.split(",")
-        actor_list.append(split_actors)
+        actor_list_2.append(split_actors)
 
-    final_actor_list = flatten(actor_list)
+    final_actor_list = flatten(actor_list_2)
     new_final = []
     for actor in final_actor_list:
         new_final.append(actor.strip())
@@ -37,10 +39,11 @@ def get_authors():
     
     return no_dups
 
+#returns a dictionary of shows associated with the actor passed in as the argument
 def get_show_by_actor(actor):
     data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
-    data_m = data.dropna()
-    data_dict = data_m.to_dict(orient='records')
+    data_no_blank_values = data.dropna()
+    data_dict = data_no_blank_values.to_dict(orient='records')
     shows_by_actor = {}
     for show in data_dict:
         if actor in show["cast"]:
