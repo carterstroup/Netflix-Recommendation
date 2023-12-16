@@ -19,25 +19,27 @@ def get_search_data():
         for title in csv_reader:
             shows_and_actors[title["title"]] = title["cast"]
         return shows_and_actors
-    
-def get_actors():
-    df = pd.read_csv("netflix_titles.csv", usecols=['cast'], skip_blank_lines=True)
-    df_modified = df.dropna()
-    df_modified2 = df_modified.drop_duplicates()
-    actor_pre_list = df_modified2.values.tolist()
-    actor_list = flatten(actor_pre_list)
-    actor_list_2 = []
-    for actor in actor_list:
-        split_actors = actor.split(",")
-        actor_list_2.append(split_actors)
 
-    final_actor_list = flatten(actor_list_2)
-    new_final = []
+#returns an array of all actors in the csv file  
+def get_actors():
+    #read the csv file with pandas
+    df = pd.read_csv("netflix_titles.csv", usecols=['cast'], skip_blank_lines=True)
+    df_no_blanks = df.dropna()
+    df_no_duplicates = df_no_blanks.drop_duplicates()
+    actor_pre_list = df_no_duplicates.values.tolist()
+    #splits the list by comma, converts it to one dimension, and removes duplicates and whitespace
+    actor_list_flattened = flatten(actor_pre_list)
+    actor_list = []
+    for actor in actor_list_flattened:
+        split_actors = actor.split(",")
+        actor_list.append(split_actors)
+    final_actor_list = flatten(actor_list)
+    final_actor_list = []
     for actor in final_actor_list:
-        new_final.append(actor.strip())
-    no_dups = list(dict.fromkeys(new_final))
+        final_actor_list.append(actor.strip())
+    no_duplicates_list = list(dict.fromkeys(final_actor_list))
     
-    return no_dups
+    return no_duplicates_list
 
 #returns a dictionary of shows associated with the actor passed in as the argument
 def get_show_by_actor(actor):
