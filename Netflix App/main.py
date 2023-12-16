@@ -1,6 +1,6 @@
 #Imports
 import time
-from data_import import get_search_data, get_actors, get_show_by_actor
+from data_import import get_actors, get_show_by_actor
 
 #Initialization
 #Asks the user if they wish to use the search or recommendation function and calls the appropriate function
@@ -36,8 +36,8 @@ def lookup_actor():
     list_of_actors = get_actors()
     final_actor_list = []
     #requests an input until the resulting actor list is 9 or fewer
+    print("Please enter part or all of an actors name.")
     while True:
-        print("Please enter part or all of an actors name.")
         user_input = input().strip()
         list_of_matches = []
         for actor in list_of_actors:
@@ -45,26 +45,34 @@ def lookup_actor():
                 list_of_matches.append(actor)
         if len(list_of_matches) > 10:
             print("Please make your search more specific.")
+            time.sleep(1.2)
             continue
         else:
             final_actor_list += list_of_matches
             break
     #display the actors that were found in the search
     print("Our records have found these actors.")
-    print("Please enter the number that correlates to the name of your intended actor for a list of Netflix shows and movies")
+    time.sleep(1.2)
+    print("Please enter the number that correlates to the name of your intended actor.")
     actor_and_number_dict = {} #assigns a number to the actor for easy input selection
     idx_track = 0
     for actor in final_actor_list:
         actor_and_number_dict[str(idx_track)] = actor
         idx_track += 1
         
-    print(actor_and_number_dict)
+    #printing the dictionary in a more readable fashion
+    for key, value in actor_and_number_dict.items():
+        print(key + ": " + value)
     
     actor_selection = input()
     
     print("You have selected " + actor_and_number_dict[actor_selection])
     
+    time.sleep(1.2)
+    
     print("This actor has appear in the following moviews and TV Shows")
+    
+    time.sleep(1.2)
     
     list_shows_and_info(get_show_by_actor(actor_and_number_dict[actor_selection]))
 

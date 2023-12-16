@@ -33,9 +33,9 @@ def get_actors():
     for actor in actor_list_flattened:
         split_actors = actor.split(",")
         actor_list.append(split_actors)
-    final_actor_list = flatten(actor_list)
+    flat_actor_list = flatten(actor_list)
     final_actor_list = []
-    for actor in final_actor_list:
+    for actor in flat_actor_list:
         final_actor_list.append(actor.strip())
     no_duplicates_list = list(dict.fromkeys(final_actor_list))
     
