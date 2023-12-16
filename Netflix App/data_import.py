@@ -72,13 +72,13 @@ def get_show_by_actor(actor):
             shows_by_actor[show["show_id"]] = show
     return shows_by_actor
 
-def get_show_by_show(actor):
+def get_show_by_show(i_show):
     data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
     data_no_blank_values = data.dropna()
     data_dict = data_no_blank_values.to_dict(orient='records')
     shows_by_actor = {}
     for show in data_dict:
-        if actor in show["title"]:
+        if i_show in show["title"]:
             shows_by_actor[show["show_id"]] = show
     return shows_by_actor
     
