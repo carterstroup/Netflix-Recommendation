@@ -4,32 +4,46 @@ from data_import import get_actors, get_show_by_actor
 
 #Initialization
 #Asks the user if they wish to use the search or recommendation function and calls the appropriate function
-def program_start():
-    print("Welcome to the Netflix Search and Recommendation Platform!")
-    time.sleep(1)
-    print("Would you like to search or get a recommendation?")
+def program_start(run_num):
+    if run_num == 0:
+        print("Welcome to the Netflix Search and Recommendation Platform!")
+        time.sleep(1)
+        print("Would you like to search or get a recommendation?")
+        get_start_input()
+    else:
+        print("Please enter 'recommendation' or 'search'.")
+        get_start_input()
+        
+#gets the user input to assist the program start function            
+def get_start_input():
     movie_or_show_selection = input().strip().lower()
-    if movie_or_show_selection == "lookup" or "look up" or "search":
-        lookup_init()
-    elif movie_or_show_selection == "recommend":
+    if movie_or_show_selection == "lookup" or movie_or_show_selection == "look up" or movie_or_show_selection == "search":
+        lookup_init(0)
+    elif movie_or_show_selection == "recommend" or movie_or_show_selection == "recomend" or movie_or_show_selection == "recommendation" or movie_or_show_selection == "recommendations":
         pass
         #call recommendation function
     else:
-        pass
-        #ensure input is valid
+        return program_start(1)
 
 #Lookup Function: Allows the user to search Netflix shows based on the name or actors
-def lookup_init():
-    print("Would you like to search by actors or the name of a show?")
+def lookup_init(run_num):
+    if run_num == 0:
+        print("Would you like to search by actors or the name of a show?")
+        lookup_input_helper()
+    else:
+        print("Please enter 'name' or 'actor'.")
+        lookup_input_helper()
+
+#assists with managing the user input for the lookup_init
+def lookup_input_helper():
     actors_or_show_name = input().strip().lower()
-    if actors_or_show_name == "name" or "actor" or "actors" or "search by actors" or "search for actors":
+    if actors_or_show_name == "name" or actors_or_show_name == "actor" or actors_or_show_name == "actors" or actors_or_show_name == "search by actors" or actors_or_show_name == "search for actors":
         lookup_actor()
     elif actors_or_show_name == "actors":
         pass
         #call actor lookup function
     else:
-        pass
-        #deal with inputs other than expected
+        return lookup_init(1)
 
 #Searches the Netflix shows based on a full or partial actor name.
 def lookup_actor():
@@ -59,32 +73,37 @@ def lookup_actor():
     for actor in final_actor_list:
         actor_and_number_dict[str(idx_track)] = actor
         idx_track += 1
-        
     #printing the dictionary in a more readable fashion
     for key, value in actor_and_number_dict.items():
         print(key + ": " + value)
-    
-    actor_selection = input()
+
+    actor_selection = actor_selection_input_helper(actor_and_number_dict)
     
     print("You have selected " + actor_and_number_dict[actor_selection])
-    
     time.sleep(1.2)
-    
-    print("This actor has appear in the following moviews and TV Shows")
-    
+    print("This actor has appear in the following movies and TV Shows")
     time.sleep(1.2)
-    
     list_shows_and_info(get_show_by_actor(actor_and_number_dict[actor_selection]))
-
+    
+def actor_selection_input_helper(dict):
+    a_input = input().strip()
+    num_options = []
+    for num in dict:
+        print(num)
+        num_options.append(num)
+    for option in num_options:
+        if a_input == option:
+            return option
+    print("Please enter a valid option.")
+    return actor_selection_input_helper(dict)
+    
 def lookup_name():
     pass
 
 def list_shows_and_info(show_list):
-    
     key_list = []
     for key in show_list:
         key_list.append(key)
-    
     for key in key_list:
         show = show_list
         print("")
@@ -107,8 +126,7 @@ def list_shows_and_info(show_list):
             print("---------------------------------------")
             print("")
 
-
 #Recommendation Function: Suggests shows/movies to the user based on questions asked about ratings, country, genre, etc.
 
 #Function Calls / Application Management
-program_start()
+program_start(0)
