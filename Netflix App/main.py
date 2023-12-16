@@ -4,23 +4,25 @@ from data_import import get_search_data, get_authors, get_show_by_actor
 
 #Initialization
 def program_start():
-    print("Welcome to the Netflix Show/Movie Search and Recomendation Platform")
+    print("Welcome to the Netflix Search and Recommendation Platform!")
     time.sleep(1)
-    print("Would you like to search for a show or have the program make a recomendation?")
-    movie_or_show_selection = input()
-    if movie_or_show_selection == "lookup":
+    print("Would you like to search or get a recommendation?")
+    movie_or_show_selection = input().strip().lower()
+    if movie_or_show_selection == "lookup" or "look up" or "search":
+        lookup_init()
+    elif movie_or_show_selection == "recommend":
         pass
-        #call lookup function
-    elif movie_or_show_selection == "recomend":
+        #call recommendation function
+    else:
         pass
-        #call recomendation function
+        #ensure input is valid
 
 #Lookup Function: Allows the user to search Netflix shows based on the name or actors
 def lookup_init():
-    print("Would you like to search via actors or the name of the show")
-    actors_or_show_name = input()
-    if actors_or_show_name == "name":
-        pass
+    print("Would you like to search by actors or the name of a show?")
+    actors_or_show_name = input().strip().lower()
+    if actors_or_show_name == "name" or "actor" or "actors" or "search by actors" or "search for actors":
+        lookup_actor()
         #call name lookup function
     elif actors_or_show_name == "actors":
         pass
