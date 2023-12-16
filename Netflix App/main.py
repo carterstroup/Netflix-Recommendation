@@ -3,6 +3,7 @@ import time
 from data_import import get_search_data, get_authors, get_show_by_actor
 
 #Initialization
+#Asks the user if they wish to use the search or recommendation function and calls the appropriate function
 def program_start():
     print("Welcome to the Netflix Search and Recommendation Platform!")
     time.sleep(1)
@@ -23,31 +24,30 @@ def lookup_init():
     actors_or_show_name = input().strip().lower()
     if actors_or_show_name == "name" or "actor" or "actors" or "search by actors" or "search for actors":
         lookup_actor()
-        #call name lookup function
     elif actors_or_show_name == "actors":
         pass
         #call actor lookup function
-    
+    else:
+        pass
+        #deal with inputs other than expected
+
+#Searches the Netflix shows based on a full or partial actor name.
 def lookup_actor():
     list_of_authors = get_authors()
-    print("Please type part or all of an actor's name")
-    actor_input = input()
-    list_of_init_matches = []
-    for actor in list_of_authors:
-        if actor_input in actor:
-            list_of_init_matches.append(actor)
     final_actor_list = []
+    #requests an input until the resulting actor list is 9 or fewer
     while True:
-        print("We need to narrow the search further, please enter a more specific name")
-        more_specific_input = input()
-        list_of_nxt_matches = []
+        print("Please enter part or all of an actors name.")
+        user_input = input().strip()
+        list_of_matches = []
         for actor in list_of_authors:
-            if more_specific_input in actor:
-                list_of_nxt_matches.append(actor)
-        if len(list_of_nxt_matches) > 10:
+            if user_input in actor:
+                list_of_matches.append(actor)
+        if len(list_of_matches) > 10:
+            print("Please make your search more specific.")
             continue
         else:
-            final_actor_list += list_of_nxt_matches
+            final_actor_list += list_of_matches
             break
     print("Our records have found these actors.")
     print("Please enter the number that correlates to the name of your intended actor for a list of Netflix shows and movies")
@@ -99,8 +99,7 @@ def list_shows_and_info(show_list):
             print("")
 
 
-#Recomendation Function: Suggests shows/movies to the user based on questions asked about ratings, country, genre, etc.
+#Recommendation Function: Suggests shows/movies to the user based on questions asked about ratings, country, genre, etc.
 
 #Function Calls / Application Management
-#program_start()
-lookup_actor()
+program_start()
