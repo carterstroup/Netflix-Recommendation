@@ -1,6 +1,6 @@
 #Imports
 import time
-from data_import import get_actors, get_show_by_actor, get_show_list, get_show_by_show
+from data_import import get_data, get_show
 
 #Initialization
 #Asks the user if they wish to use the search or recommendation function and calls the appropriate function
@@ -48,10 +48,10 @@ def lookup(type):
     working_list = None
     final_list = []
     if type == "name":
-        working_list = get_show_list()
+        working_list = get_data("name")
         print("Please enter part or all of a show's name.")
     elif type == "actor":
-        working_list = get_actors()
+        working_list = get_data("actor")
         print("Please enter part or all of an actor's name.")
     while True:
         user_input = input().strip()
@@ -88,11 +88,11 @@ def lookup(type):
     if type == "name":
         print("Here is some more information about this show:")
         time.sleep(1.2)
-        list_shows_and_info(get_show_by_show(working_dict[final_selection]))
+        list_shows_and_info(get_show("name", working_dict[final_selection]))
     elif type == "actor":
         print("Here is a list of shows this actor has appeared in.")
         time.sleep(1.2)
-        list_shows_and_info(get_show_by_actor(working_dict[final_selection]))
+        list_shows_and_info(get_show("actor", working_dict[final_selection]))
 
     
 def input_helper(dict):
