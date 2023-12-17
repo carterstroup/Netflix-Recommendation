@@ -20,8 +20,8 @@ def get_start_input():
     if movie_or_show_selection == "lookup" or movie_or_show_selection == "look up" or movie_or_show_selection == "search":
         lookup_init(0)
     elif movie_or_show_selection == "recommend" or movie_or_show_selection == "recomend" or movie_or_show_selection == "recommendation" or movie_or_show_selection == "recommendations":
-        pass
-        #call recommendation function
+        print("This function is still in development, please use the search function by typing 'search'.")
+        get_start_input()
     else:
         return program_start(1)
 
@@ -61,6 +61,10 @@ def lookup(type):
                 list_of_matches.append(item)
         if len(list_of_matches) > 10:
             print("Please make your search more specific.")
+            time.sleep(1.2)
+            continue
+        elif len(list_of_matches) == 0:
+            print("There were no results for your search. Please try something else.")
             time.sleep(1.2)
             continue
         else:

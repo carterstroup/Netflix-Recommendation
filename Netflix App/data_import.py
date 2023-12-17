@@ -1,4 +1,3 @@
-import csv
 import pandas as pd
 
 #Takes a nested array and turns it into a one-dimensional array
@@ -19,18 +18,18 @@ def get_data(type):
         df = pd.read_csv("netflix_titles.csv", usecols=['cast'], skip_blank_lines=True)
     df.fillna('Not Available', inplace=True)
     df_no_duplicates = df.drop_duplicates()
-    actor_pre_list = df_no_duplicates.values.tolist()
+    df_to_list = df_no_duplicates.values.tolist()
     #splits the list by comma, converts it to one dimension, and removes duplicates and whitespace
-    actor_list_flattened = flatten(actor_pre_list)
-    actor_list = []
-    for actor in actor_list_flattened:
-        split_actors = actor.split(",")
-        actor_list.append(split_actors)
-    flat_actor_list = flatten(actor_list)
-    final_actor_list = []
-    for actor in flat_actor_list:
-        final_actor_list.append(actor.strip())
-    no_duplicates_list = list(dict.fromkeys(final_actor_list))
+    actor_list_flattened = flatten(df_to_list)
+    starting_list = []
+    for item in actor_list_flattened:
+        split = item.split(",")
+        starting_list.append(split)
+    flat_list = flatten(starting_list)
+    final_list = []
+    for item in flat_list:
+        final_list.append(item.strip())
+    no_duplicates_list = list(dict.fromkeys(final_list))
     return no_duplicates_list
 
 def get_show(type, by_method):
