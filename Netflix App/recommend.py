@@ -2,23 +2,7 @@ import time
 import pandas as pd
 from data import flatten
 
-#CURRENT STATE: It will currently print out the genres that match the first three parameters if there are more than five shows left
-#what needs to happen is for it to take that list, present five of them at a time (around 20 will return max) and ask if they are interested
-# in them. If they are, add it to a list until you have 3 or so genres, then re-run the program to hopefully return something,
-# each time they pick something, the next element needs to be loaded into the dict visible and there needs to be an option for none of these
-# at that point the main functionailty will be done and everyting needs to be connected and significantly simplified
-
-
-
-
-
-
-
-
-
-
-
-
+#starts the process and basically runs everything for now. It asks a series of questions then saves them to an options array that is eventually passed for more specific info.
 def recommend_init():
     options_list = []
     print("Awesome! I'll ask you a few questions to better understand what you are looking for, then offer you suggestions!")
@@ -60,9 +44,36 @@ def recommend_init():
             elif "tv-ma" in rating_pref:
                 options_list.append("TV-MA")
                 print("You have selected TV-MA.")
-                check_result = get_results_first(options_list)
-                if type(check_result) == list:
-                    print(check_result)
+                check_result = get_results_first(options_list) #gets a list of shows, if there are fewer than five it will print them, otherwise it will print the genre options and execute
+                if type(check_result) == list: #if its a list it means genres were returned, not results
+                    #assigns nums to the dict and prints it out
+                    time.sleep(1.2)
+                    print("Please choose up to three categories by entering their number followed by a space (i.e. 3 6 7)")
+                    working_dict = {} #will eventually house a number that corresponds to an option passed into the function
+                    idx_track = 0 #tracks the index of the list to assign that same number to the key for working_dict
+                    #iterates through the list passed in and assigns each to the working_dict
+                    for item in check_result:
+                        working_dict[str(idx_track)] = item
+                        idx_track += 1
+                    #Prints the dictionary in user-friendly fashion, rather than in dict form
+                    for key, value in working_dict.items():
+                        print(key + ": " + value)
+                    
+                    #converts the number inputs back into genre names before passing it on to the function that searches for shows
+                    genre_selections = input().strip()
+                    genre_selections_list = None
+                    if len(genre_selections) == 1:
+                        genre_selections_list = [working_dict[genre_selections]]
+                    else:
+                        new_array_used = []
+                        genre_selections_list = genre_selections.split()
+                        for i in genre_selections_list:
+                            new_array_used.append(working_dict[i])
+                        genre_selections_list = new_array_used
+                    options_list.append(genre_selections_list)
+                    time.sleep(1.2)
+                    print("We have found these shows we think you'll love!")
+                    print(list_shows_and_info(get_results_second(options_list)))
                 else:
                     list_shows_and_info(get_results_first(options_list))
             elif "no" in rating_pref:
@@ -76,7 +87,8 @@ def recommend_init():
     else:
         #handle exception
         pass
-    
+
+#runs the first time to get shows and return genres
 def get_results_first(options):
     
     return_list = {}
@@ -109,8 +121,68 @@ def get_results_first(options):
         no_duplicates_list = list(dict.fromkeys(final_list))
         return no_duplicates_list
     
-    return return_list
+    return return_list 
 
+#runs the second time to narrow down shows based on selected genres
+def get_results_second(options):
+    
+    return_list = {}
+    return_genres = []
+    return_list_2 = {}
+    
+    options_year_complete = options[1]
+    options_year_sliced = options_year_complete[:-1]
+    
+    data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
+    data.fillna('Not Available', inplace=True)
+    data_dict = data.to_dict(orient='records')
+    
+    #gets all of the shows that match the previous options, probably could be memoized
+    for show in data_dict:
+            if show["type"] == options[0]:
+                if options_year_sliced in str(show["release_year"]):
+                    if show["rating"] == options[2]:
+                        return_list[show["show_id"]] = show
+    
+    #checks based on genres, it starts with shows that match the most recommendations in the input order
+    for key, show in return_list.items():
+        if options[3][0] in show["listed_in"] and options[3][1] in show["listed_in"] and options[3][2] in show["listed_in"]:
+            return_list_2[show["show_id"]] = show
+    
+    if len(return_list_2) < 4:
+        for key, show in return_list.items():
+            if options[3][0] in show["listed_in"] and options[3][1] in show["listed_in"]:
+                return_list_2[show["show_id"]] = show
+                
+    if len(return_list_2) < 4:
+        for key, show in return_list.items():
+            if options[3][1] in show["listed_in"] and options[3][2] in show["listed_in"]:
+                return_list_2[show["show_id"]] = show
+                
+    if len(return_list_2) < 4:
+        for key, show in return_list.items():
+            if options[3][1] in show["listed_in"] and options[3][2] in show["listed_in"]:
+                return_list_2[show["show_id"]] = show
+                
+    if len(return_list_2) < 4:
+        for key, show in return_list.items():
+            if options[3][0] in show["listed_in"]:
+                return_list_2[show["show_id"]] = show
+                
+    if len(return_list_2) < 4:
+        for key, show in return_list.items():
+            if options[3][1] in show["listed_in"]:
+                return_list_2[show["show_id"]] = show
+    
+    if len(return_list_2) < 4:
+        for key, show in return_list.items():
+            if options[3][2] in show["listed_in"]:
+                return_list_2[show["show_id"]] = show
+
+    
+    return return_list_2
+
+#lists shows
 def list_shows_and_info(show_dict):
     key_list = [] #holds a list of dict keys
     #appends key_list with the keys of each nested dict
