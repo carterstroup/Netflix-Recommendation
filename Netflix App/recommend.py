@@ -1,24 +1,36 @@
+#Imports
 import time
 import pandas as pd
 from data import flatten
 
-#starts the process and basically runs everything for now. It asks a series of questions then saves them to an options array that is eventually passed for more specific info.
+#Starts and manages the recommendation program up to the genre selection.
+#Runtime: O(1)
 def recommend_init(run_num=0):
     if run_num == 0:
-        print("Awesome! I'll ask you a few questions to better understand what you are looking for, then offer you suggestions!")
+        print("Awesome! Let's start with a few questions.")
     else:
         print("We couldn't find a match for your search. Please try again.")
     time.sleep(1.2)
-    first_options_list = get_category()
-    second_options_list = get_year(first_options_list)
-    third_options_list = None
-    if second_options_list[0] == "TV Show":
-        third_options_list = get_rating(second_options_list)
-    elif second_options_list[0] == "Movie":
-        third_options_list = get_rating_movie(second_options_list)
-    get_genres(third_options_list)
+    #Gets data from input functions before compiling it and sending it to the genre function.
+    show_category = get_category()
+    show_year_and_category = get_year(show_category)
+    full_options_list = None
+    if show_year_and_category[0] == "TV Show":
+        full_options_list = get_rating(show_year_and_category)
+    elif show_year_and_category[0] == "Movie":
+        full_options_list = get_rating_movie(show_year_and_category)
+    get_genres(full_options_list)
 
-def get_genres(options):
+
+
+
+
+
+#Takes the options list from recommend_init, retrieves a list of show genres matching these options with helper functions.
+#It then presents these options and manages the input.
+def get_genres(options, run_num=0):
+    if run_num != 0:
+        print("Invalid Input. Please try again.")
     options_list = options
     check_result = get_results_first(options_list) #gets a list of shows, if there are fewer than five it will print them, otherwise it will print the genre options and execute
     if type(check_result) == list: #if its a list it means genres were returned, not results
@@ -35,17 +47,20 @@ def get_genres(options):
         for key, value in working_dict.items():
             print(key + ": " + value)
         
-        #converts the number inputs back into genre names before passing it on to the function that searches for shows
+        #Converts the number inputs back into genre names before passing it on to the function that searches for shows.
         genre_selections = input().strip()
-        genre_selections_list = None
-        if len(genre_selections) == 1:
-            genre_selections_list = [working_dict[genre_selections]]
-        else:
-            new_array_used = []
-            genre_selections_list = genre_selections.split()
-            for i in genre_selections_list:
-                new_array_used.append(working_dict[i])
-            genre_selections_list = new_array_used
+        try:
+            genre_selections_list = None
+            if len(genre_selections) == 1:
+                genre_selections_list = [working_dict[genre_selections]]
+            else:
+                new_array_used = []
+                genre_selections_list = genre_selections.split()
+                for i in genre_selections_list:
+                    new_array_used.append(working_dict[i])
+                genre_selections_list = new_array_used
+        except:
+            return get_genres(options_list, 1)
         options_list.append(genre_selections_list)
         time.sleep(1.2)
         print("We have found these shows we think you'll love!")
@@ -54,6 +69,14 @@ def get_genres(options):
     else:
         time.sleep(1.2)
         list_shows_and_info(get_results_first(options_list))
+        
+        
+        
+        
+        
+        
+        
+        
 
 def get_rating(options, run_num=0):
     options_list = options
