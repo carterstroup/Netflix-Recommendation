@@ -7,7 +7,7 @@ def recommend_init(run_num=0):
     if run_num == 0:
         print("Awesome! I'll ask you a few questions to better understand what you are looking for, then offer you suggestions!")
     else:
-        print("We couldn't find a match for your search. Please try again. Would you like a TV-show or movie?")
+        print("We couldn't find a match for your search. Please try again.")
     time.sleep(1.2)
     first_options_list = get_category()
     second_options_list = get_year(first_options_list)
@@ -49,13 +49,16 @@ def get_genres(options):
         options_list.append(genre_selections_list)
         time.sleep(1.2)
         print("We have found these shows we think you'll love!")
-        print(list_shows_and_info(get_results_second(options_list)))
+        time.sleep(1.2)
+        list_shows_and_info(get_results_second(options_list))
     else:
+        time.sleep(1.2)
         list_shows_and_info(get_results_first(options_list))
 
 def get_rating(options, run_num=0):
     options_list = options
     if run_num == 0:
+        time.sleep(1.2)
         print("Do you have a rating preference (TV-Y, TV-G, TV-PG, TV-14, TV-MA or No Preference)?")
     else:
         print("Please enter a valid option (i.e. 'TV-G' or 'No Preference').")
@@ -80,15 +83,16 @@ def get_rating(options, run_num=0):
             options_list.append("")
             print("We won't sort via rating")
         else:
-            get_rating(options, 1)
+            return get_rating(options, 1)
     else:
-        get_rating(options, 1)
+        return get_rating(options, 1)
     return options_list
 
 
 def get_rating_movie(options, run_num=0):
     options_list = options
     if run_num == 0:
+        time.sleep(1.2)
         print("Do you have a rating preference (G, PG, PG-13, R, NC-17, or No Preference)?")
     else:
         print("Please enter a valid option (i.e. 'PG' or 'No Preference').")
@@ -116,9 +120,9 @@ def get_rating_movie(options, run_num=0):
             options_list.append("")
             print("We won't sort via rating")
         else:
-            get_rating(options, 1)
+            return get_rating_movie(options, 1)
     else:
-        get_rating(options, 1)
+        return get_rating_movie(options, 1)
     return options_list
 
 
@@ -129,6 +133,7 @@ def get_rating_movie(options, run_num=0):
 def get_category(run_num=0):
     options_list = []
     if run_num == 0:
+        time.sleep(1.2)
         print("Would you like to watch a TV Show or Movie?")
     else:
         print("Please enter a valid option (i.e. 'TV').")
@@ -141,13 +146,14 @@ def get_category(run_num=0):
             options_list.append("Movie")
             print("We will stick to Movies in our recommendations.")
         else:
-            get_category(1)
+            return get_category(1)
     else:
-        get_category(1)
+        return get_category(1)
     return options_list
 
 def get_year(options, run_num=0):
     if run_num == 0:
+        time.sleep(1.2)
         print("Which decade do you want your TV show from? (1940s-2020s)")
     else:
         print("Please enter a valid decade. (i.e. '2010' or '1960')")
@@ -182,9 +188,9 @@ def get_year(options, run_num=0):
             options_list.append("2020")
             print("We think the 2020s were pretty cool too")
         else:
-            get_year(options, 1)
+            return get_year(options, 1)
     else:
-        get_year(options, 1)
+        return get_year(options, 1)
     return options_list
 
 #runs the first time to get shows and return genres
@@ -200,12 +206,19 @@ def get_results_first(options):
     data.fillna('Not Available', inplace=True)
     data_dict = data.to_dict(orient='records')
     
-    for show in data_dict:
-        if show["type"] == options[0]:
-            if options_year_sliced in str(show["release_year"]):
-                if show["rating"] == options[2]:
+    if options[2] == "":
+        for show in data_dict:
+            if show["type"] == options[0]:
+                if options_year_sliced in str(show["release_year"]):
                     return_list[show["show_id"]] = show
                     return_genres.append(show["listed_in"])
+    else:
+        for show in data_dict:
+            if show["type"] == options[0]:
+                if options_year_sliced in str(show["release_year"]):
+                    if show["rating"] == options[2]:
+                        return_list[show["show_id"]] = show
+                        return_genres.append(show["listed_in"])
     
     if len(return_list) > 5:
         starting_list = []
@@ -221,7 +234,7 @@ def get_results_first(options):
         return no_duplicates_list
     
     if len(return_list) == 0:
-        recommend_init(1)
+        return recommend_init(1)
     
     return return_list 
 
@@ -239,11 +252,19 @@ def get_results_second(options):
     data_dict = data.to_dict(orient='records')
     
     #gets all of the shows that match the previous options, probably could be memoized
-    for show in data_dict:
+    
+    if options[2] == "":
+        for show in data_dict:
+            if show["type"] == options[0]:
+                if options_year_sliced in str(show["release_year"]):
+                    return_list[show["show_id"]] = show
+    else:
+        for show in data_dict:
             if show["type"] == options[0]:
                 if options_year_sliced in str(show["release_year"]):
                     if show["rating"] == options[2]:
                         return_list[show["show_id"]] = show
+    
                         
     if len(options[3]) == 1:
         for key, show in return_list.items():
@@ -330,6 +351,7 @@ def list_shows_and_info(show_dict):
         print("Description: " + show_dict[key]["description"])
         print("---------------------------------------")
         print("")
+        time.sleep(1)
         
         
 recommend_init()
