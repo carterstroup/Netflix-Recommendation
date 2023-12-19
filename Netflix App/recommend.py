@@ -16,18 +16,14 @@ def recommend_init(run_num=0):
     show_year_and_category = get_year(show_category)
     full_options_list = None
     if show_year_and_category[0] == "TV Show":
-        full_options_list = get_rating(show_year_and_category)
+        full_options_list = get_rating_tv(show_year_and_category)
     elif show_year_and_category[0] == "Movie":
         full_options_list = get_rating_movie(show_year_and_category)
     get_genres(full_options_list)
 
-
-
-
-
-
 #Takes the options list from recommend_init, retrieves a list of show genres matching these options with helper functions.
 #It then presents these options and manages the input.
+#Runtime: O(n)
 def get_genres(options, run_num=0):
     if run_num != 0:
         print("Invalid Input. Please try again.")
@@ -49,7 +45,7 @@ def get_genres(options, run_num=0):
         
         #Converts the number inputs back into genre names before passing it on to the function that searches for shows.
         genre_selections = input().strip()
-        try:
+        try: #will except if the input is not a valid option
             genre_selections_list = None
             if len(genre_selections) == 1:
                 genre_selections_list = [working_dict[genre_selections]]
@@ -68,17 +64,11 @@ def get_genres(options, run_num=0):
         list_shows_and_info(get_results_second(options_list))
     else:
         time.sleep(1.2)
-        list_shows_and_info(get_results_first(options_list))
-        
-        
-        
-        
-        
-        
-        
-        
+        list_shows_and_info(get_results_first(options_list)) 
 
-def get_rating(options, run_num=0):
+#Asks and retrieves the user input for TV Show ratings.
+#Runtime: O(1)
+def get_rating_tv(options, run_num=0):
     options_list = options
     if run_num == 0:
         time.sleep(1.2)
@@ -106,12 +96,13 @@ def get_rating(options, run_num=0):
             options_list.append("")
             print("We won't sort via rating")
         else:
-            return get_rating(options, 1)
+            return get_rating_tv(options, 1)
     else:
-        return get_rating(options, 1)
+        return get_rating_tv(options, 1)
     return options_list
 
-
+#Works the same as the TV function, but asks questions pertinent to movies instead.
+#Runtime: O(1)
 def get_rating_movie(options, run_num=0):
     options_list = options
     if run_num == 0:
@@ -148,11 +139,8 @@ def get_rating_movie(options, run_num=0):
         return get_rating_movie(options, 1)
     return options_list
 
-
-
-
-
-
+#Asks and retrieves TV show or movie.
+#Runtime: O(1)
 def get_category(run_num=0):
     options_list = []
     if run_num == 0:
@@ -174,6 +162,8 @@ def get_category(run_num=0):
         return get_category(1)
     return options_list
 
+#Asks and retrieves the input for the decade of the show.
+#Runtime: O(1)
 def get_year(options, run_num=0):
     if run_num == 0:
         time.sleep(1.2)
@@ -216,19 +206,19 @@ def get_year(options, run_num=0):
         return get_year(options, 1)
     return options_list
 
-#runs the first time to get shows and return genres
+#Runs the first time to get genres or return shows, could probably be combined with function get_results_second
+#Runtime: O(n)
 def get_results_first(options):
-    
     return_list = {}
     return_genres = []
-    
+    #splits the year to the first three digits to determine the decade
     options_year_complete = options[1]
     options_year_sliced = options_year_complete[:-1]
-    
+    #reads the data, could be memoized
     data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
     data.fillna('Not Available', inplace=True)
     data_dict = data.to_dict(orient='records')
-    
+    #exception for no rating preference input
     if options[2] == "":
         for show in data_dict:
             if show["type"] == options[0]:
@@ -242,7 +232,7 @@ def get_results_first(options):
                     if show["rating"] == options[2]:
                         return_list[show["show_id"]] = show
                         return_genres.append(show["listed_in"])
-    
+    #if there are more than five shows, send back genres. If not, send shows
     if len(return_list) > 5:
         starting_list = []
         for item in return_genres:
@@ -255,27 +245,25 @@ def get_results_first(options):
             final_list.append(item.strip())
         no_duplicates_list = list(dict.fromkeys(final_list))
         return no_duplicates_list
-    
+    #handle no results
     if len(return_list) == 0:
         return recommend_init(1)
-    
     return return_list 
 
-#runs the second time to narrow down shows based on selected genres
+#Runs the second time to narrow down based on genres, could possibly be combined.
+#Runtime: O(n)
 def get_results_second(options):
-    
-    return_list = {}
-    return_list_2 = {}
-    
+    return_list = {} #first for reading
+    return_list_2 = {} #used to create results of the first list since dicts are immutable
+    #splits the date into the first three digits to indicate decade
     options_year_complete = options[1]
     options_year_sliced = options_year_complete[:-1]
-    
+    #Gets file data
     data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
     data.fillna('Not Available', inplace=True)
     data_dict = data.to_dict(orient='records')
-    
     #gets all of the shows that match the previous options, probably could be memoized
-    
+    #handles no rating input option
     if options[2] == "":
         for show in data_dict:
             if show["type"] == options[0]:
@@ -286,9 +274,7 @@ def get_results_second(options):
             if show["type"] == options[0]:
                 if options_year_sliced in str(show["release_year"]):
                     if show["rating"] == options[2]:
-                        return_list[show["show_id"]] = show
-    
-                        
+                        return_list[show["show_id"]] = show     
     if len(options[3]) == 1:
         for key, show in return_list.items():
                 if options[3][0] in show["listed_in"]:
@@ -344,16 +330,15 @@ def get_results_second(options):
                 if options[3][2] in show["listed_in"]:
                     return_list_2[show["show_id"]] = show
 
-    
+    #If there are more than five results, it will only take the top 5
     if len(return_list_2) > 5:
         while len(return_list_2) > 5:
             return_list_2.popitem()
-            
-    
-    
     return return_list_2
 
-#lists shows
+#Lists out the shows.
+#Runtime: O(n)
+#Already other places in the program and needs one house
 def list_shows_and_info(show_dict):
     key_list = [] #holds a list of dict keys
     #appends key_list with the keys of each nested dict
@@ -375,6 +360,5 @@ def list_shows_and_info(show_dict):
         print("---------------------------------------")
         print("")
         time.sleep(1)
-        
-        
+#Initialization 
 recommend_init()
