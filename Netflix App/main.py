@@ -1,7 +1,7 @@
 #Imports
 import time
 from recommend import recommend_init
-from search import lookup_init
+from search import search_init
 
 #Asks the user if they wish to use the search or recommendation feature and 
 #calls the appropriate function using a helper function (get_start_input)
@@ -22,7 +22,7 @@ def program_start(run_num=0):
 def get_start_input():
     movie_or_show_selection = input().strip().lower()
     if movie_or_show_selection == "lookup" or movie_or_show_selection == "look up" or movie_or_show_selection == "search":
-        lookup_init()
+        search_init()
     elif movie_or_show_selection == "recommend" or movie_or_show_selection == "recomend" or movie_or_show_selection == "recommendation" or movie_or_show_selection == "recommendations":
         recommend_init()
     else:

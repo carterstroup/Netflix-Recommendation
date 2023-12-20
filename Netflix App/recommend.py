@@ -64,6 +64,7 @@ def get_genres(options, run_num=0):
         time.sleep(1.2)
         list_shows_and_info(get_shows_by_genre(options_list))
     else:
+        print("We have found these shows we think you'll love!")
         time.sleep(1.2)
         list_shows_and_info(get_genres_by_option(options_list)) 
 
@@ -175,31 +176,31 @@ def get_year(options, run_num=0):
     decade_choice = input().strip().lower()
     if len(decade_choice) < 6:
         if "1940" in decade_choice:
-            options_list.append("1940")
+            options_list.append("194")
             print("We think the 1940s were pretty cool too.")
         elif "1950" in decade_choice:
-            options_list.append("1950")
+            options_list.append("195")
             print("The 1950s were certainly an excellent time!")
         elif "1960" in decade_choice:
-            options_list.append("1960")
+            options_list.append("196")
             print("We think the 1960s were pretty cool too.")
         elif "1970" in decade_choice:
-            options_list.append("1970")
+            options_list.append("197")
             print("The 1970s were certainly an excellent time!")
         elif "1980" in decade_choice:
-            options_list.append("1980")
+            options_list.append("198")
             print("We think the 1980s were pretty cool too.")
         elif "1990" in decade_choice:
-            options_list.append("1990")
+            options_list.append("199")
             print("The 1990s were certainly an excellent time!")
         elif "2000" in decade_choice:
-            options_list.append("2000")
+            options_list.append("200")
             print("We think the 2000s were pretty cool too.")
         elif "2010" in decade_choice:
-            options_list.append("2010")
+            options_list.append("201")
             print("The 2010s were certainly an excellent time!")
         elif "2020" in decade_choice:
-            options_list.append("2020")
+            options_list.append("202")
             print("We think the 2020s are pretty cool too.")
         else:
             return get_year(options, 1)

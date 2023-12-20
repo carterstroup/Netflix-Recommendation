@@ -16,8 +16,10 @@ def flatten(list):
             result.append(item)
     return result
 
-def get_complete_csv_data():
-    if complete_csv_data == None:
+#Retrieves the whole CSV file in a nested dict.
+#Runtime: O(1)
+def get_complete_csv_data(memoized):
+    if memoized == None:
         #splits the year to the first three digits to determine the decade
         #reads the data, could be memoized
         data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
@@ -58,7 +60,7 @@ def get_search_data(type):
 #type is name/actor indicating search method, and by_method is the string holding the show or actor name
 #Runtime: O(n)
 def get_show_by_search(type, by_method):
-    data_dict = get_complete_csv_data() #converts the data frame to a dict
+    data_dict = get_complete_csv_data(complete_csv_data) #converts the data frame to a dict
     shows_list = {}
     #iterates through all fo the data to form and return a nested dict with all of the show information
     if type == "name":
@@ -94,32 +96,25 @@ def list_shows_and_info(show_dict):
         print("---------------------------------------")
         print("")
         time.sleep(1)
-    
-def slice_year_to_decade(options):
-    options_year_complete = options[1]
-    options_year_sliced = options_year_complete[:-1]
-    return options_year_sliced
 
 #Runs the first time to get genres or return shows, could probably be combined with function get_results_second
 #Runtime: O(n)
 def get_genres_by_option(options):
     return_list = {}
     return_genres = []
-    #splits the year to the first three digits to determine the decade
-    options_year_sliced = slice_year_to_decade(options)
     #reads the data, could be memoized
-    data_dict = get_complete_csv_data()
+    data_dict = get_complete_csv_data(complete_csv_data)
     #exception for no rating preference input
     if options[2] == "":
         for show in data_dict:
             if show["type"] == options[0]:
-                if options_year_sliced in str(show["release_year"]):
+                if options[1] in str(show["release_year"]):
                     return_list[show["show_id"]] = show
                     return_genres.append(show["listed_in"])
     else:
         for show in data_dict:
             if show["type"] == options[0]:
-                if options_year_sliced in str(show["release_year"]):
+                if options[1] in str(show["release_year"]):
                     if show["rating"] == options[2]:
                         return_list[show["show_id"]] = show
                         return_genres.append(show["listed_in"])
@@ -146,8 +141,6 @@ def get_genres_by_option(options):
 def get_shows_by_genre(options):
     return_list = {} #first for reading
     return_list_2 = {} #used to create results of the first list since dicts are immutable
-    #splits the date into the first three digits to indicate decade
-    options_year_sliced = slice_year_to_decade(options)
     #Gets file data
     data_dict = get_complete_csv_data()
     #gets all of the shows that match the previous options, probably could be memoized
@@ -155,12 +148,12 @@ def get_shows_by_genre(options):
     if options[2] == "":
         for show in data_dict:
             if show["type"] == options[0]:
-                if options_year_sliced in str(show["release_year"]):
+                if options[1] in str(show["release_year"]):
                     return_list[show["show_id"]] = show
     else:
         for show in data_dict:
             if show["type"] == options[0]:
-                if options_year_sliced in str(show["release_year"]):
+                if options[1] in str(show["release_year"]):
                     if show["rating"] == options[2]:
                         return_list[show["show_id"]] = show     
     if len(options[3]) == 1:
