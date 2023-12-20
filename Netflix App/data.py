@@ -1,5 +1,6 @@
 #Imports
 import pandas as pd
+import time
 
 #Takes a nested array and turns it into a one-dimensional array
 #Runtime: O(n)
@@ -56,3 +57,157 @@ def get_show(type, by_method):
             if by_method in show["cast"]:
                 shows_list[show["show_id"]] = show
     return shows_list
+
+#takes an input of a nested dict full of shows with all the show info, and unpacks it one by one for the user to see
+#Runtime: O(n)
+def list_shows_and_info(show_dict):
+    key_list = [] #holds a list of dict keys
+    #appends key_list with the keys of each nested dict
+    for key in show_dict:
+        key_list.append(key)
+    #prints out the info in each nested dict using the nested keys in key_list
+    for key in key_list:
+        print("")
+        print("---------------------------------------")
+        if show_dict[key]["type"] == "Movie":
+            print("Movie Name: " + show_dict[key]["title"])
+        else:
+            print("TV Show Name: " + show_dict[key]["title"])
+        print("Release Year: " + str(show_dict[key]["release_year"]))
+        print("Rating: " + show_dict[key]["rating"])
+        print("Duration: " + show_dict[key]["duration"])
+        print("Genre: " + show_dict[key]["listed_in"])
+        print("Description: " + show_dict[key]["description"])
+        print("---------------------------------------")
+        print("")
+        time.sleep(1)
+        
+#Runs the first time to get genres or return shows, could probably be combined with function get_results_second
+#Runtime: O(n)
+def get_genres_by_option(options):
+    return_list = {}
+    return_genres = []
+    #splits the year to the first three digits to determine the decade
+    options_year_complete = options[1]
+    options_year_sliced = options_year_complete[:-1]
+    #reads the data, could be memoized
+    data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
+    data.fillna('Not Available', inplace=True)
+    data_dict = data.to_dict(orient='records')
+    #exception for no rating preference input
+    if options[2] == "":
+        for show in data_dict:
+            if show["type"] == options[0]:
+                if options_year_sliced in str(show["release_year"]):
+                    return_list[show["show_id"]] = show
+                    return_genres.append(show["listed_in"])
+    else:
+        for show in data_dict:
+            if show["type"] == options[0]:
+                if options_year_sliced in str(show["release_year"]):
+                    if show["rating"] == options[2]:
+                        return_list[show["show_id"]] = show
+                        return_genres.append(show["listed_in"])
+    #if there are more than five shows, send back genres. If not, send shows
+    if len(return_list) > 5:
+        starting_list = []
+        for item in return_genres:
+            split = item.split(",")
+            starting_list.append(split)
+        flat_list = flatten(starting_list)
+        final_list = []
+        #removes whitespace in strings and removes duplicates by converting it to a dict and back
+        for item in flat_list:
+            final_list.append(item.strip())
+        no_duplicates_list = list(dict.fromkeys(final_list))
+        return no_duplicates_list
+    #handle no results
+    if len(return_list) == 0:
+        return "0"
+    return return_list 
+
+#Runs the second time to narrow down based on genres, could possibly be combined.
+#Runtime: O(n)
+def get_shows_by_genre(options):
+    return_list = {} #first for reading
+    return_list_2 = {} #used to create results of the first list since dicts are immutable
+    #splits the date into the first three digits to indicate decade
+    options_year_complete = options[1]
+    options_year_sliced = options_year_complete[:-1]
+    #Gets file data
+    data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
+    data.fillna('Not Available', inplace=True)
+    data_dict = data.to_dict(orient='records')
+    #gets all of the shows that match the previous options, probably could be memoized
+    #handles no rating input option
+    if options[2] == "":
+        for show in data_dict:
+            if show["type"] == options[0]:
+                if options_year_sliced in str(show["release_year"]):
+                    return_list[show["show_id"]] = show
+    else:
+        for show in data_dict:
+            if show["type"] == options[0]:
+                if options_year_sliced in str(show["release_year"]):
+                    if show["rating"] == options[2]:
+                        return_list[show["show_id"]] = show     
+    if len(options[3]) == 1:
+        for key, show in return_list.items():
+                if options[3][0] in show["listed_in"]:
+                    return_list_2[show["show_id"]] = show
+    elif len(options[3]) == 2:
+            for key, show in return_list.items():
+                if options[3][0] in show["listed_in"] and options[3][1] in show["listed_in"]:
+                    return_list_2[show["show_id"]] = show
+                    
+            if len(return_list_2) < 4:
+                for key, show in return_list.items():
+                    if options[3][0] in show["listed_in"]:
+                        return_list_2[show["show_id"]] = show
+                        
+            if len(return_list_2) < 4:
+                for key, show in return_list.items():
+                    if options[3][1] in show["listed_in"]:
+                        return_list_2[show["show_id"]] = show
+    else:
+    
+        #checks based on genres, it starts with shows that match the most recommendations in the input order
+        for key, show in return_list.items():
+            if options[3][0] in show["listed_in"] and options[3][1] in show["listed_in"] and options[3][2] in show["listed_in"]:
+                return_list_2[show["show_id"]] = show
+        
+        if len(return_list_2) < 4:
+            for key, show in return_list.items():
+                if options[3][0] in show["listed_in"] and options[3][1] in show["listed_in"]:
+                    return_list_2[show["show_id"]] = show
+                    
+        if len(return_list_2) < 4:
+            for key, show in return_list.items():
+                if options[3][1] in show["listed_in"] and options[3][2] in show["listed_in"]:
+                    return_list_2[show["show_id"]] = show
+                    
+        if len(return_list_2) < 4:
+            for key, show in return_list.items():
+                if options[3][1] in show["listed_in"] and options[3][2] in show["listed_in"]:
+                    return_list_2[show["show_id"]] = show
+                    
+        if len(return_list_2) < 4:
+            for key, show in return_list.items():
+                if options[3][0] in show["listed_in"]:
+                    return_list_2[show["show_id"]] = show
+                    
+        if len(return_list_2) < 4:
+            for key, show in return_list.items():
+                if options[3][1] in show["listed_in"]:
+                    return_list_2[show["show_id"]] = show
+        
+        if len(return_list_2) < 4:
+            for key, show in return_list.items():
+                if options[3][2] in show["listed_in"]:
+                    return_list_2[show["show_id"]] = show
+
+    #If there are more than five results, it will only take the top 5
+    if len(return_list_2) > 5:
+        while len(return_list_2) > 5:
+            return_list_2.popitem()
+    return return_list_2

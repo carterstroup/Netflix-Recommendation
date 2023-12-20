@@ -10,7 +10,7 @@ def program_start(run_num=0):
     if run_num == 0: #checks if this is the first time the function has been called.
         print("Welcome to the Netflix Search and Recommendation Platform!")
         time.sleep(1)
-        print("Would you like to search or get a recommendation?")
+        print("Would you like to search for a show or get a recommendation?")
         get_start_input()
     else:
         print("Please enter 'recommendation' or 'search'.")

@@ -1,13 +1,13 @@
 #Imports
 import time
-from data import get_data, get_show
+from data import get_data, get_show, list_shows_and_info
 
 #Allows the user to choose between searching by actors or by the name of the show.
 #Uses a helper function (lookup_input_helper) to get user input and validate it.
 #Runtime: O(1)
 def lookup_init(run_num=0):
     if run_num == 0:
-        print("Would you like to search by actors or the name of a show?")
+        print("Would you like to search by an actor or the name of a show?")
         lookup_input_helper()
     else:
         print("Please enter 'name' or 'actor'.")
@@ -71,7 +71,7 @@ def get_selection(type, output_list):
     elif type == "actor":
         print("We have found the following actors from our records.")
         time.sleep(1.2)
-        print("Please enter the number that correlates to the name of your intended actor.")
+        print("Please enter the number of your intended actor for a list of shows.")
     working_dict = {} #will eventually house a number that corresponds to an option passed into the function
     idx_track = 0 #tracks the index of the list to assign that same number to the key for working_dict
     #iterates through the list passed in and assigns each to the working_dict
@@ -109,26 +109,3 @@ def input_helper(dict):
             return option
     print("Please enter a valid option.")
     return input_helper(dict)
-
-#takes an input of a nested dict full of shows with all the show info, and unpacks it one by one for the user to see
-#Runtime: O(n)
-def list_shows_and_info(show_dict):
-    key_list = [] #holds a list of dict keys
-    #appends key_list with the keys of each nested dict
-    for key in show_dict:
-        key_list.append(key)
-    #prints out the info in each nested dict using the nested keys in key_list
-    for key in key_list:
-        print("")
-        print("---------------------------------------")
-        if show_dict[key]["type"] == "Movie":
-            print("Movie Name: " + show_dict[key]["title"])
-        else:
-            print("TV Show Name: " + show_dict[key]["title"])
-        print("Release Year: " + str(show_dict[key]["release_year"]))
-        print("Rating: " + show_dict[key]["rating"])
-        print("Duration: " + show_dict[key]["duration"])
-        print("Genre: " + show_dict[key]["listed_in"])
-        print("Description: " + show_dict[key]["description"])
-        print("---------------------------------------")
-        print("")
