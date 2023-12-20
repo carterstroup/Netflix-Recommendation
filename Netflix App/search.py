@@ -1,6 +1,6 @@
 #Imports
 import time
-from data import get_data, get_show, list_shows_and_info
+from data import get_search_data, get_show_by_search, list_shows_and_info
 
 #Allows the user to choose between searching by actors or by the name of the show.
 #Uses a helper function (lookup_input_helper) to get user input and validate it.
@@ -32,10 +32,10 @@ def lookup(type):
     final_list = [] #the list that will be returned
     #modifies working_list based on user search option, indicated in the functions arguments
     if type == "name":
-        working_list = get_data("name")
+        working_list = get_search_data("name")
         print("Please enter part or all of a show's name.")
     elif type == "actor":
-        working_list = get_data("actor")
+        working_list = get_search_data("actor")
         print("Please enter part or all of an actor's name.")
     #runs through all of the data in working_list comparing it to the user input (search).
     #it will then append the matching data to a list, if the list is greater than 9, the program will ask for a more specific search.
@@ -89,11 +89,11 @@ def get_selection(type, output_list):
     if type == "name":
         print("Here is some more information about this show:")
         time.sleep(1.2)
-        list_shows_and_info(get_show("name", working_dict[final_selection]))
+        list_shows_and_info(get_show_by_search("name", working_dict[final_selection]))
     elif type == "actor":
         print("Here is a list of shows this actor has appeared in.")
         time.sleep(1.2)
-        list_shows_and_info(get_show("actor", working_dict[final_selection]))        
+        list_shows_and_info(get_show_by_search("actor", working_dict[final_selection]))        
 
 #helps get_selection by validating the input is in the dict and returns the valid choice as a key to the dict
 #Runtime: O(n)

@@ -2,6 +2,9 @@
 import pandas as pd
 import time
 
+#Memoization:
+complete_csv_data = None
+
 #Takes a nested array and turns it into a one-dimensional array
 #Runtime: O(n)
 def flatten(list):
@@ -13,10 +16,22 @@ def flatten(list):
             result.append(item)
     return result
 
+def get_complete_csv_data():
+    if complete_csv_data == None:
+        #splits the year to the first three digits to determine the decade
+        #reads the data, could be memoized
+        data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
+        data.fillna('Not Available', inplace=True)
+        data_dict = data.to_dict(orient='records')
+        complete_csv_data = data_dict
+        return data_dict
+    else:
+        return complete_csv_data
+
 #retrieves a list of actors or show names from the csv file and stores them in a list
 #cleans the data in the process by skipping blanks, changing non-values to 'Not Available' and removes duplicates
 #O(n)
-def get_data(type):
+def get_search_data(type):
     #gets certain data based on need to reduce runtime
     if type == "name":
         df = pd.read_csv("netflix_titles.csv", usecols=['title'], skip_blank_lines=True)
@@ -42,10 +57,8 @@ def get_data(type):
 #retrieves a list of shows by either the show name or actors who are in the show
 #type is name/actor indicating search method, and by_method is the string holding the show or actor name
 #Runtime: O(n)
-def get_show(type, by_method):
-    data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True) #gets data
-    data.fillna('Not Available', inplace=True) #changes non-values to string Not Available
-    data_dict = data.to_dict(orient='records') #converts the data frame to a dict
+def get_show_by_search(type, by_method):
+    data_dict = get_complete_csv_data() #converts the data frame to a dict
     shows_list = {}
     #iterates through all fo the data to form and return a nested dict with all of the show information
     if type == "name":
@@ -81,19 +94,21 @@ def list_shows_and_info(show_dict):
         print("---------------------------------------")
         print("")
         time.sleep(1)
-        
+    
+def slice_year_to_decade(options):
+    options_year_complete = options[1]
+    options_year_sliced = options_year_complete[:-1]
+    return options_year_sliced
+
 #Runs the first time to get genres or return shows, could probably be combined with function get_results_second
 #Runtime: O(n)
 def get_genres_by_option(options):
     return_list = {}
     return_genres = []
     #splits the year to the first three digits to determine the decade
-    options_year_complete = options[1]
-    options_year_sliced = options_year_complete[:-1]
+    options_year_sliced = slice_year_to_decade(options)
     #reads the data, could be memoized
-    data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
-    data.fillna('Not Available', inplace=True)
-    data_dict = data.to_dict(orient='records')
+    data_dict = get_complete_csv_data()
     #exception for no rating preference input
     if options[2] == "":
         for show in data_dict:
@@ -132,12 +147,9 @@ def get_shows_by_genre(options):
     return_list = {} #first for reading
     return_list_2 = {} #used to create results of the first list since dicts are immutable
     #splits the date into the first three digits to indicate decade
-    options_year_complete = options[1]
-    options_year_sliced = options_year_complete[:-1]
+    options_year_sliced = slice_year_to_decade(options)
     #Gets file data
-    data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
-    data.fillna('Not Available', inplace=True)
-    data_dict = data.to_dict(orient='records')
+    data_dict = get_complete_csv_data()
     #gets all of the shows that match the previous options, probably could be memoized
     #handles no rating input option
     if options[2] == "":
