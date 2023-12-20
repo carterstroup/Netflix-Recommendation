@@ -361,4 +361,4 @@ def list_shows_and_info(show_dict):
         print("")
         time.sleep(1)
 #Initialization 
-recommend_init()
+#recommend_init()
