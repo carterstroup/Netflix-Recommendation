@@ -20,8 +20,8 @@ def program_start(run_num=0):
 #It ensures the input is valid, and calls the appropriate function. 
 #Runtime: O(1)         
 def get_start_input():
-    valid_recommendation_inputs = ["recommend", "recomend", "recommendation", "recommendations"]
-    valid_search_inputs = ["lookup", "look up", "search"]
+    valid_recommendation_inputs = ["recommend", "recomend", "recommendation", "recommendations", "get a recommendation"]
+    valid_search_inputs = ["lookup", "look up", "search", "search for a show"]
     movie_or_show_selection = input().strip().lower()
     if movie_or_show_selection in valid_search_inputs:
         search_init()

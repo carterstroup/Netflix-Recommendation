@@ -102,7 +102,7 @@ def get_rating_tv(options):
 #Runtime: O(1)
 def get_rating_movie(options):
     options_list = options
-    rating_pref = get_user_input("Do you have a rating preference (G, PG, PG-13, R, NC-17, or No Preference)?", ["g", "pg", "pg-13", "r", "nc-17", "no"], "Please enter a valid option (e.g., 'PG' or 'No Preference').")
+    rating_pref = get_user_input("Do you have a rating preference (G, PG, PG-13, R, NC-17, or No Preference)?", ["g", "pg", "pg-13", "r", "nc-17", "no preference"], "Please enter a valid option (e.g., 'PG' or 'No Preference').")
     if "pg-13" in rating_pref:
         options_list.append("PG-13")
         return
@@ -116,7 +116,7 @@ def get_rating_movie(options):
         options_list.append("R")
     elif "nc-17" in rating_pref:
         options_list.append("NC-17")
-    elif "no" in rating_pref:
+    elif "no preference" in rating_pref:
         options_list.append("")
     print_message(f"Great! We will stick to movies rated {rating_pref.capitalize()}.")
     return options_list
@@ -134,6 +134,7 @@ def get_category():
 #Runtime: O(1)
 def get_year(options):
     options_list = options
+    decade_options = ["1940", "1950", "1960", "1970", "1980", "1990", "2000", "2010", "2020", "1940s", "1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s", "2020s"]
     decade_choice = get_user_input("Which decade do you want your TV show from? (1940s-2020s)", ["1940", "1950", "1960", "1970", "1980", "1990", "2000", "2010", "2020"], "Please enter a valid decade (e.g., '2010' or '1960').")
     if "1940" in decade_choice:
         options_list.append("194")
