@@ -20,10 +20,12 @@ def program_start(run_num=0):
 #It ensures the input is valid, and calls the appropriate function. 
 #Runtime: O(1)         
 def get_start_input():
+    valid_recommendation_inputs = ["recommend", "recomend", "recommendation", "recommendations"]
+    valid_search_inputs = ["lookup", "look up", "search"]
     movie_or_show_selection = input().strip().lower()
-    if movie_or_show_selection == "lookup" or movie_or_show_selection == "look up" or movie_or_show_selection == "search":
+    if movie_or_show_selection in valid_search_inputs:
         search_init()
-    elif movie_or_show_selection == "recommend" or movie_or_show_selection == "recomend" or movie_or_show_selection == "recommendation" or movie_or_show_selection == "recommendations":
+    elif movie_or_show_selection in valid_recommendation_inputs:
         recommend_init()
     else:
         return program_start(1) #the input was not valid, it will start the process over again

@@ -1,28 +1,16 @@
 #Imports
 import time
-from data import get_search_data, get_show_by_search, list_shows_and_info
+from data import get_search_data, get_show_by_search, list_shows_and_info, get_user_input
 
 #Allows the user to choose between searching by actors or by the name of the show.
 #Uses a helper function (lookup_input_helper) to get user input and validate it.
 #Runtime: O(1)
-def search_init(run_num=0):
-    if run_num == 0:
-        print("Would you like to search by an actor or the name of a show?")
-        search_input_helper()
-    else:
-        print("Please enter 'name' or 'actor'.")
-        search_input_helper()
-
-#Helps the lookup_init function by getting and validating a user input.
-#Runtime: O(1)
-def search_input_helper():
-    actors_or_show_name = input().strip().lower()
-    if actors_or_show_name == "actor" or actors_or_show_name == "actors" or actors_or_show_name == "search by actors" or actors_or_show_name == "search for actors":
+def search_init():
+    user_choice = get_user_input("Would you like to search by an actor or the name of a show?", ["actor", "actors", "search by actors", "search for actors", "name", "show name", "show"], "Please enter 'name' or 'actor'.")
+    if "actor" in user_choice:
         lookup("actor")
-    elif actors_or_show_name == "name" or actors_or_show_name == "show name" or actors_or_show_name == "show":
+    elif "show" in user_choice or "name" in user_choice:
         lookup("name")
-    else:
-        return search_init(1) #the input was not valid
 
 #Searches the data sourced in data.py by actor or name (indicated by 'type' argument) depending on user choice earlier in the program.
 #It then passes on the narrowed data to get_selection.

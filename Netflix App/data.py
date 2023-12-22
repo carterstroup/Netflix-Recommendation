@@ -5,11 +5,22 @@ import time
 #Memoization:
 complete_csv_data = None
 
+#Gets and validates inputs.
+#Runtime: O(1)
+def get_user_input(prompt, valid_options=None, error_message="Invalid input. Please try again."):
+    while True:
+        print(prompt)
+        user_input = input().strip().lower()
+        if valid_options is not None and user_input not in valid_options:
+            print(error_message)
+            continue
+        return user_input
+
 #Takes a nested array and turns it into a one-dimensional array
 #Runtime: O(n)
-def flatten(list):
+def flatten(nested_list):
     result = []
-    for item in list:
+    for item in nested_list:
         if hasattr(item, "__iter__") and not isinstance(item, str):
             result.extend(flatten(item))
         else:
@@ -18,11 +29,11 @@ def flatten(list):
 
 #Retrieves the whole CSV file in a nested dict.
 #Runtime: O(1)
-def get_complete_csv_data(memoized):
+def get_complete_csv_data(memoized, file_name="netflix_titles.csv"):
     if memoized == None:
         #splits the year to the first three digits to determine the decade
         #reads the data, could be memoized
-        data = pd.read_csv('netflix_titles.csv', skip_blank_lines=True)
+        data = pd.read_csv(file_name, skip_blank_lines=True)
         data.fillna('Not Available', inplace=True)
         data_dict = data.to_dict(orient='records')
         complete_csv_data = data_dict
@@ -33,12 +44,12 @@ def get_complete_csv_data(memoized):
 #retrieves a list of actors or show names from the csv file and stores them in a list
 #cleans the data in the process by skipping blanks, changing non-values to 'Not Available' and removes duplicates
 #O(n)
-def get_search_data(type):
+def get_search_data(type, file_name="netflix_titles.csv"):
     #gets certain data based on need to reduce runtime
     if type == "name":
-        df = pd.read_csv("netflix_titles.csv", usecols=['title'], skip_blank_lines=True)
+        df = pd.read_csv(file_name, usecols=['title'], skip_blank_lines=True)
     elif type == "actor":
-        df = pd.read_csv("netflix_titles.csv", usecols=['cast'], skip_blank_lines=True)
+        df = pd.read_csv(file_name, usecols=['cast'], skip_blank_lines=True)
     df.fillna('Not Available', inplace=True) #replaces non-values to string
     df_no_duplicates = df.drop_duplicates() #removes duplicates
     df_to_list = df_no_duplicates.values.tolist() #converts the elements to a nested list, but the entire cell of actors is one string
@@ -59,17 +70,17 @@ def get_search_data(type):
 #retrieves a list of shows by either the show name or actors who are in the show
 #type is name/actor indicating search method, and by_method is the string holding the show or actor name
 #Runtime: O(n)
-def get_show_by_search(type, by_method):
+def get_show_by_search(search_type, name):
     data_dict = get_complete_csv_data(complete_csv_data) #converts the data frame to a dict
     shows_list = {}
     #iterates through all fo the data to form and return a nested dict with all of the show information
-    if type == "name":
+    if search_type == "name":
         for show in data_dict:
-            if by_method in show["title"]:
+            if name in show["title"]:
                 shows_list[show["show_id"]] = show
-    elif type == "actor":
+    elif search_type == "actor":
         for show in data_dict:
-            if by_method in show["cast"]:
+            if name in show["cast"]:
                 shows_list[show["show_id"]] = show
     return shows_list
 
@@ -142,7 +153,7 @@ def get_shows_by_genre(options):
     return_list = {} #first for reading
     return_list_2 = {} #used to create results of the first list since dicts are immutable
     #Gets file data
-    data_dict = get_complete_csv_data()
+    data_dict = get_complete_csv_data(complete_csv_data)
     #gets all of the shows that match the previous options, probably could be memoized
     #handles no rating input option
     if options[2] == "":
@@ -161,19 +172,19 @@ def get_shows_by_genre(options):
                 if options[3][0] in show["listed_in"]:
                     return_list_2[show["show_id"]] = show
     elif len(options[3]) == 2:
+        for key, show in return_list.items():
+            if options[3][0] in show["listed_in"] and options[3][1] in show["listed_in"]:
+                return_list_2[show["show_id"]] = show
+                
+        if len(return_list_2) < 4:
             for key, show in return_list.items():
-                if options[3][0] in show["listed_in"] and options[3][1] in show["listed_in"]:
+                if options[3][0] in show["listed_in"]:
                     return_list_2[show["show_id"]] = show
                     
-            if len(return_list_2) < 4:
-                for key, show in return_list.items():
-                    if options[3][0] in show["listed_in"]:
-                        return_list_2[show["show_id"]] = show
-                        
-            if len(return_list_2) < 4:
-                for key, show in return_list.items():
-                    if options[3][1] in show["listed_in"]:
-                        return_list_2[show["show_id"]] = show
+        if len(return_list_2) < 4:
+            for key, show in return_list.items():
+                if options[3][1] in show["listed_in"]:
+                    return_list_2[show["show_id"]] = show
     else:
     
         #checks based on genres, it starts with shows that match the most recommendations in the input order
