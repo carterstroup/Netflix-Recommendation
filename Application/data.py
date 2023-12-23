@@ -31,8 +31,6 @@ def flatten(nested_list):
 #Runtime: O(1)
 def get_complete_csv_data(memoized, file_name="netflix_titles.csv"):
     if memoized == None:
-        #splits the year to the first three digits to determine the decade
-        #reads the data, could be memoized
         data = pd.read_csv(file_name, skip_blank_lines=True)
         data.fillna('Not Available', inplace=True)
         data_dict = data.to_dict(orient='records')
