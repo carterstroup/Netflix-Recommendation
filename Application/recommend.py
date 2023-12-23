@@ -82,7 +82,7 @@ def get_genres(options):
 #Runtime: O(1)
 def get_rating_tv(options):
     options_list = options
-    rating_pref = get_user_input("Do you have a rating preference (G, PG, PG-13, R, NC-17, or No Preference)?", ["g", "pg", "pg-13", "r", "nc-17", "no preference"], "Please enter a valid option (e.g., 'PG' or 'No Preference').")
+    rating_pref = get_user_input("Do you have a rating preference (TV-Y, TV-G, TV-PG, TV-14, TV-MA, or No Preference)?", ["tv-y", "tv-g", "tv-pg", "tv-14", "tv-ma", "no preference"], "Please enter a valid option (e.g., 'TV-G' or 'No Preference').")
     if "tv-y" in rating_pref:
         options_list.append("TV-Y")
     elif "tv-g" in rating_pref:
@@ -127,7 +127,7 @@ def get_category():
     options_list = []
     tv_or_movie = get_user_input("Would you like to watch a TV Show or Movie?", ["tv", "television", "movie", "tv show", "television show"], "Please enter a valid option (e.g., 'TV').")
     options_list.append("TV Show" if "tv" in tv_or_movie else "Movie")
-    print_message(f"Great! We will find you an excellent {tv_or_movie.capitalize()}.")
+    print_message(f"Great! We will find you an excellent match.")
     return options_list
 
 #Asks and retrieves the input for the decade of the show.
@@ -135,7 +135,7 @@ def get_category():
 def get_year(options):
     options_list = options
     decade_options = ["1940", "1950", "1960", "1970", "1980", "1990", "2000", "2010", "2020", "1940s", "1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s", "2020s"]
-    decade_choice = get_user_input("Which decade do you want your TV show from? (1940s-2020s)", ["1940", "1950", "1960", "1970", "1980", "1990", "2000", "2010", "2020"], "Please enter a valid decade (e.g., '2010' or '1960').")
+    decade_choice = get_user_input("Which decade do you want your TV show from? (1940s-2020s)", decade_options, "Please enter a valid decade (e.g., '2010' or '1960').")
     if "1940" in decade_choice:
         options_list.append("194")
     elif "1950" in decade_choice:
@@ -154,5 +154,5 @@ def get_year(options):
         options_list.append("201")
     elif "2020" in decade_choice:
         options_list.append("202")
-    print_message(f"The {decade_choice.capitalize()}s is a great choice.")
+    print_message(f"{decade_choice.capitalize()} is a great choice.")
     return options_list
