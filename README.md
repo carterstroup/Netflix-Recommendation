@@ -26,6 +26,7 @@ To run the program, simply follow the steps below in your terminal.
 
 3. **Run the Application:**
     ```bash
+    cd Application
     python main.py
     ```
 
