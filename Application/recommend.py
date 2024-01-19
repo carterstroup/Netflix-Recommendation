@@ -95,7 +95,7 @@ def get_rating_tv(options):
         options_list.append("TV-MA")
     elif "no" in rating_pref:
         options_list.append("")
-    print_message(f"Great! We will stick to TV shows rated {rating_pref.capitalize()}.")
+    print_message(f"Great! We will stick to TV shows rated {rating_pref.upper()}.")
     return options_list
 
 #Gets the wanted rating for movie search.
@@ -118,7 +118,7 @@ def get_rating_movie(options):
         options_list.append("NC-17")
     elif "no preference" in rating_pref:
         options_list.append("")
-    print_message(f"Great! We will stick to movies rated {rating_pref.capitalize()}.")
+    print_message(f"Great! We will stick to movies rated {rating_pref.upper()}.")
     return options_list
 
 #Asks for TV Shows or Movie search.
